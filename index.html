@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plinks</title>
+    <script src="./js/index.js" defer></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="h-screen">
+    <div class="flex flex-col bg-[#393D3F] h-full justify-between items-center text-[#9CC4B2]">
+    <header class="w-full flex flex-row justify-between items-center p-4 bg-[#D5BBB1] text-black">
+        <h1 class="text-3xl">PLinks</h1>
+        <section class="flex w-1/5 justify-around">
+            <a href="./index.html" class="text-lg opacity-[50%]">Short</a>
+            <a href="./html/insights.html" class="text-lg">Insights</a>
+        </section>
+    </header>
+
+    <label class="text-2xl" for="linkInput">Enter your link:</label>
+    <input class="bg-transparent border rounded-sm border-white text-center text-white w-2/5 h-12 p-1" type="text" name="linkInput" id="linkInput" placeholder="https://youtube.com">
+
+    <button class="bg-transparent border border-white w-36 p-4 rounded-md" id="submitButton">Short</button>
+
+    <footer class="flex justify-center bg-[#D5BBB1] text-black w-full text-center p-0.5 text-sm">Made with care by LukasPio <span class="px-1 text-[5px]">(not the front end)</span></footer>
+    </div>
+</body>
+</html>
