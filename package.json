@@ -1,0 +1,24 @@
+{
+  "name": "plinksfrontend",
+  "version": "1.0.0",
+  "description": "A simple and not very pretty front-end for PLinks that is my implementation of a link shortener in java + spring: https://github.com/LukasPio/PLinks",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/LukasPio/PLinksFrontEnd.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/LukasPio/PLinksFrontEnd/issues"
+  },
+  "homepage": "https://github.com/LukasPio/PLinksFrontEnd#readme",
+  "devDependencies": {
+    "typescript": "^5.9.2"
+  }
+}

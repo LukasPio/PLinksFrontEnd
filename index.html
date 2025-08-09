@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Plinks</title>
-    <script src="./js/index.js" defer></script>
+    <script src="./dist/index.js" defer></script>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="h-screen">
@@ -17,11 +17,18 @@
         </section>
     </header>
 
-    <label class="text-2xl" for="linkInput">Enter your link:</label>
-    <input class="bg-transparent border rounded-sm border-white text-center text-white w-2/5 h-12 p-1" type="text" name="linkInput" id="linkInput" placeholder="https://youtube.com">
+    <section class="w-2/5">
+
+        <label class="text-2xl py-2" for="linkInput">Enter your link:</label>
+        <input class="bg-transparent border rounded-sm border-white text-white w-full h-12 p-1" type="text" name="linkInput" id="linkInput" placeholder="https://youtube.com">
+        <label class="hidden text-2xl py-2" for="customSlugInput" id="customSlugLabel">Enter your custom slug:</label>
+        <input class="hidden bg-transparent border rounded-sm border-white text-center text-white w-full h-12 p-1" type="text" name="customSlugInput" id="customSlugInput" placeholder="shortened-link">
+        <div class="flex items-center justify-center text-sm py-2">
+            <label class="pe-1" for="customSlug">Custom slug:</label><input id="customSlug" type="checkbox">
+        </div>
+    </section>
 
     <button class="bg-transparent border border-white w-36 p-4 rounded-md" id="submitButton">Short</button>
-
     <footer class="flex justify-center bg-[#D5BBB1] text-black w-full text-center p-0.5 text-sm">Made with care by LukasPio <span class="px-1 text-[5px]">(not the front end)</span></footer>
     </div>
 </body>
