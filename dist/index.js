@@ -35,15 +35,34 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-var BASE_URL = "http://localhost:8080/";
+var API_BASE_URL = "http://localhost:8080/";
 var button = document.getElementById("submitButton");
 var customSlugCheckBox = document.getElementById("customSlug");
+var expiresAfterCheckBox = document.getElementById("expiresAfter");
 var slugInputLabel = document.getElementById("customSlugLabel");
+var expiresAfterLabel = document.getElementById("expiresAfterLabel");
 var linkInput = document.getElementById("linkInput");
+var expiresAfterInput = document.getElementById("expiresAfterInput");
 var slugInput = document.getElementById("customSlugInput");
 customSlugCheckBox.addEventListener("change", function () {
-    if (customSlugCheckBox)
-        ;
+    if (customSlugCheckBox.checked) {
+        slugInputLabel.classList.remove("hidden");
+        slugInput.classList.remove("hidden");
+    }
+    else {
+        slugInputLabel.classList.add("hidden");
+        slugInput.classList.add("hidden");
+    }
+});
+expiresAfterCheckBox.addEventListener("change", function () {
+    if (expiresAfterCheckBox.checked) {
+        expiresAfterLabel.classList.remove("hidden");
+        expiresAfterInput.classList.remove("hidden");
+    }
+    else {
+        expiresAfterLabel.classList.add("hidden");
+        expiresAfterInput.classList.add("hidden");
+    }
 });
 button.addEventListener("click", function () {
     var link = linkInput.value;
@@ -55,8 +74,27 @@ button.addEventListener("click", function () {
         alert("Invalid link!");
         return;
     }
-    shortRequest(link);
+    if (expiresAfterInput.value.length <= 0 && expiresAfterCheckBox.checked) {
+        alert("Please fill expires after field");
+        return;
+    }
+    if (slugInput.value.length <= 0 && customSlugCheckBox.checked) {
+        alert("Please fill custom slug field");
+        return;
+    }
+    var customSlug = customSlugCheckBox.checked ? slugInput.value : null;
+    var expiresAfter = expiresAfterCheckBox.checked ? Number.parseInt(expiresAfterInput.value) : null;
+    var generateQrCode = null;
+    var linkRequest = {
+        url: link,
+        slug: customSlug,
+        expiresAfter: expiresAfter,
+        generateQrCode: generateQrCode
+    };
+    shortRequest(linkRequest);
     linkInput.value = "";
+    slugInput.value = "";
+    expiresAfterInput.value = "";
 });
 function isValidUrl(link) {
     try {
@@ -67,15 +105,13 @@ function isValidUrl(link) {
         return false;
     }
 }
-function shortRequest(normalized) {
+function shortRequest(linkToShort) {
     return __awaiter(this, void 0, void 0, function () {
         var _this = this;
         return __generator(this, function (_a) {
-            fetch(BASE_URL + "short", {
+            fetch(API_BASE_URL + "short", {
                 method: "POST",
-                body: JSON.stringify({
-                    url: normalized,
-                }),
+                body: JSON.stringify(linkToShort),
                 headers: {
                     "Content-type": "application/json; charset=UTF-8"
                 }
@@ -103,4 +139,5 @@ function shortRequest(normalized) {
 }
 function showError(responseJson) {
     alert("Occurred an error shorting your link: " + responseJson.message);
+    throw new Error();
 }

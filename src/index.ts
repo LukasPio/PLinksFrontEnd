@@ -15,19 +15,47 @@ type LinkResponseFail = {
     data: null
 }
 
-const BASE_URL = "http://localhost:8080/"
+type LinkRequest = {
+    url: string,
+    slug: string | null,
+    expiresAfter: number | null,
+    generateQrCode: boolean | null
+}
+
+const API_BASE_URL = "http://localhost:8080/"
 
 const button = document.getElementById("submitButton") as HTMLButtonElement
 
 const customSlugCheckBox = document.getElementById("customSlug") as HTMLInputElement
+const expiresAfterCheckBox = document.getElementById("expiresAfter") as HTMLInputElement
 
 const slugInputLabel = document.getElementById("customSlugLabel") as HTMLLabelElement
+const expiresAfterLabel = document.getElementById("expiresAfterLabel") as HTMLLabelElement
 
 const linkInput = document.getElementById("linkInput") as HTMLInputElement
-const slugInput = document.getElementById("customSlugInput")
+const expiresAfterInput = document.getElementById("expiresAfterInput") as HTMLInputElement
+const slugInput = document.getElementById("customSlugInput") as HTMLInputElement
 
 customSlugCheckBox.addEventListener("change", () => {
-    if (customSlugCheckBox)
+    if (customSlugCheckBox.checked) {
+        slugInputLabel.classList.remove("hidden")
+        slugInput.classList.remove("hidden")
+    }
+    else {
+        slugInputLabel.classList.add("hidden")
+        slugInput.classList.add("hidden")
+    }
+})
+
+expiresAfterCheckBox.addEventListener("change", () => {
+    if (expiresAfterCheckBox.checked) {
+        expiresAfterLabel.classList.remove("hidden")
+        expiresAfterInput.classList.remove("hidden")
+    }
+    else {
+        expiresAfterLabel.classList.add("hidden")
+        expiresAfterInput.classList.add("hidden")
+    }
 })
 
 button.addEventListener("click", () => {
@@ -43,8 +71,31 @@ button.addEventListener("click", () => {
         return;
     }
 
-    shortRequest(link)
-    linkInput!!.value = ""
+    if (expiresAfterInput.value.length <= 0 && expiresAfterCheckBox.checked) {
+        alert("Please fill expires after field")
+        return;
+    }
+
+    if (slugInput.value.length <= 0 && customSlugCheckBox.checked) {
+        alert("Please fill custom slug field")
+        return;
+    }
+
+    const customSlug = customSlugCheckBox.checked ? slugInput.value : null
+    const expiresAfter = expiresAfterCheckBox.checked ? Number.parseInt(expiresAfterInput.value) : null
+    const generateQrCode = null 
+
+    const linkRequest: LinkRequest = {
+        url: link,
+        slug: customSlug,
+        expiresAfter: expiresAfter,
+        generateQrCode: generateQrCode
+    } 
+
+    shortRequest(linkRequest)
+    linkInput.value = ""
+    slugInput.value = ""
+    expiresAfterInput.value = ""
 })
 
 function isValidUrl(link: string) {
@@ -56,12 +107,10 @@ function isValidUrl(link: string) {
   }
 }
 
-async function shortRequest(normalized: string) {
-    fetch(BASE_URL + "short", {
+async function shortRequest(linkToShort: LinkRequest) {
+    fetch(API_BASE_URL + "short", {
         method: "POST",
-        body: JSON.stringify({
-            url: normalized,
-        }),
+        body: JSON.stringify(linkToShort),
         headers: {
             "Content-type": "application/json; charset=UTF-8"
         }
@@ -76,4 +125,5 @@ async function shortRequest(normalized: string) {
 
 function showError(responseJson: LinkResponseFail) {
     alert("Occurred an error shorting your link: " + responseJson.message)
+    throw new Error()
 }
