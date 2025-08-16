@@ -3,46 +3,417 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Plinks</title>
-    <script src="./dist/index.js" defer></script>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>PLinks - URL Shortener</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .card {
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            border: none;
+            backdrop-filter: blur(10px);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            border: none;
+            border-radius: 25px;
+            padding: 12px 30px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        
+        .form-control {
+            border-radius: 10px;
+            border: 2px solid #e9ecef;
+            padding: 12px 15px;
+        }
+        
+        .form-control:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+        }
+        
+        .navbar {
+            background: rgba(255, 255, 255, 0.95) !important;
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .qr-code-container {
+            text-align: center;
+            margin-top: 20px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+        
+        .result-container {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+        
+        .loading {
+            display: none;
+        }
+        
+        .stats-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+        
+        .stats-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .stats-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #667eea;
+        }
+    </style>
 </head>
-<body class="h-screen">
-    <div class="flex flex-col bg-[#393D3F] h-full justify-between items-center text-[#9CC4B2]">
-    <header class="w-full flex flex-row justify-between items-center p-4 bg-[#D5BBB1] text-black">
-        <h1 class="text-3xl">PLinks</h1>
-        <section class="flex w-1/5 justify-around">
-            <a href="./index.html" class="text-lg opacity-[50%]">Short</a>
-            <a href="./html/insights.html" class="text-lg">Insights</a>
-        </section>
-    </header>
-
-    <section class="flex flex-col justify-center items-center w-2/5 h-full">
-        <label class="text-2xl w-full text-left py-2" for="linkInput">Enter your link:</label>
-        <input class="bg-transparent border rounded-sm border-white text-center text-white w-full h-12 p-1" type="text" name="linkInput" id="linkInput" placeholder="https://youtube.com">
-        
-        <label class="hidden text-2xl w-full text-left py-2" for="customSlugInput" id="customSlugLabel">Enter your custom slug:</label>
-        <input class="hidden bg-transparent border rounded-sm border-white text-center text-white w-full h-12 p-1" type="text" name="customSlugInput" id="customSlugInput" placeholder="shortened-link">
-        
-        <label class="hidden text-2xl w-full text-left py-2" for="expiresAfter" id="expiresAfterLabel">Expires after(seconds):</label>
-        <input class="hidden bg-transparent border rounded-sm border-white text-center text-white w-full h-12 p-1" type="number" name="expiresAfterInput" id="expiresAfterInput" placeholder="120" min="1" max="31536000">
-        
-
-        <div class="flex flex-col items-center justify-center text-sm py-2">
-            <table>
-                <tr class="flex">
-                    <td class="flex">
-                        <label class="pe-1" for="customSlug">Custom slug:</label><input id="customSlug" type="checkbox">
-                    </td>
-                    <td class="flex">
-                        <label class="pe-1" for="expiresAfter">Expires:</label><input id="expiresAfter" type="checkbox">
-                    </td>
-                </tr>
-            </table>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="#" onclick="showShortPage()">
+                <i class="fas fa-link text-primary"></i> PLinks
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" onclick="showShortPage()">
+                            <i class="fas fa-scissors"></i> Shorten
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" onclick="showInsightsPage()">
+                            <i class="fas fa-chart-bar"></i> Insights
+                        </a>
+                    </li>
+                </ul>
+            </div>
         </div>
-            <button class="bg-transparent border border-white w-36 p-4 rounded-md" id="submitButton">Short</button>
-    </section>
-    <footer class="flex justify-center bg-[#D5BBB1] text-black w-full text-center p-0.5 text-sm">Made with care by LukasPio <span class="px-1 text-[5px]">(not the front end)</span></footer>
+    </nav>
+
+    <!-- Shorten Page -->
+    <div id="shortPage" class="container" style="margin-top: 100px; padding-bottom: 50px;">
+        <div class="row justify-content-center">
+            <div class="col-md-8 col-lg-6">
+                <div class="card">
+                    <div class="card-body p-4">
+                        <div class="text-center mb-4">
+                            <i class="fas fa-link fa-3x text-primary mb-3"></i>
+                            <h2 class="card-title">Shorten Your URL</h2>
+                            <p class="text-muted">Transform long links into short, easy-to-share URLs</p>
+                        </div>
+
+                        <form id="shortForm">
+                            <div class="mb-3">
+                                <label for="url" class="form-label">URL to shorten</label>
+                                <input type="url" class="form-control" id="url" placeholder="https://example.com/your-very-long-url" required>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="customSlug" class="form-label">Custom slug (optional)</label>
+                                <input type="text" class="form-control" id="customSlug" placeholder="my-custom-link" maxlength="20">
+                                <small class="form-text text-muted">Leave blank to generate automatically</small>
+                            </div>
+
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label for="expiresAfter" class="form-label">Expires in (seconds)</label>
+                                    <input type="number" class="form-control" id="expiresAfter" placeholder="3600" min="1">
+                                    <small class="form-text text-muted">Leave blank to never expire</small>
+                                </div>
+                                <div class="col-md-6 d-flex align-items-end">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="generateQrCode">
+                                        <label class="form-check-label" for="generateQrCode">
+                                            Generate QR Code
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary w-100">
+                                <span class="loading">
+                                    <i class="fas fa-spinner fa-spin"></i> Shortening...
+                                </span>
+                                <span class="not-loading">
+                                    <i class="fas fa-scissors"></i> Shorten URL
+                                </span>
+                            </button>
+                        </form>
+
+                        <!-- Result -->
+                        <div id="result" class="result-container" style="display: none;">
+                            <h5><i class="fas fa-check-circle text-success"></i> Link shortened successfully!</h5>
+                            <div class="input-group mt-3">
+                                <input type="text" class="form-control" id="shortenedUrl" readonly>
+                                <button class="btn btn-outline-secondary" type="button" onclick="copyToClipboard()">
+                                    <i class="fas fa-copy"></i>
+                                </button>
+                            </div>
+                            <div id="qrCodeContainer" class="qr-code-container" style="display: none;">
+                                <h6>QR Code:</h6>
+                                <img id="qrCodeImage" src="" alt="QR Code" class="img-fluid" style="max-width: 200px;">
+                            </div>
+                        </div>
+
+                        <!-- Error Alert -->
+                        <div id="errorAlert" class="alert alert-danger mt-3" style="display: none;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
+
+    <!-- Insights Page -->
+    <div id="insightsPage" class="container" style="margin-top: 100px; padding-bottom: 50px; display: none;">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-body p-4">
+                        <div class="text-center mb-4">
+                            <i class="fas fa-chart-bar fa-3x text-primary mb-3"></i>
+                            <h2 class="card-title">Link Insights</h2>
+                            <p class="text-muted">See how many clicks your shortened link has received</p>
+                        </div>
+
+                        <form id="insightsForm">
+                            <div class="mb-3">
+                                <label for="slugInput" class="form-label">Link slug</label>
+                                <div class="input-group">
+                                    <span class="input-group-text">http://localhost:8080/</span>
+                                    <input type="text" class="form-control" id="slugInput" placeholder="ABC123" required>
+                                </div>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary w-100">
+                                <span class="loading">
+                                    <i class="fas fa-spinner fa-spin"></i> Searching...
+                                </span>
+                                <span class="not-loading">
+                                    <i class="fas fa-search"></i> Get Statistics
+                                </span>
+                            </button>
+                        </form>
+
+                        <!-- Statistics Result -->
+                        <div id="statsResult" class="mt-4" style="display: none;">
+                            <div class="stats-card text-center">
+                                <i class="fas fa-mouse-pointer fa-2x text-primary mb-3"></i>
+                                <div class="stats-number" id="clicksCount">0</div>
+                                <h5>Total Clicks</h5>
+                                <p class="text-muted">Number of times the link has been accessed</p>
+                            </div>
+                        </div>
+
+                        <!-- Error Alert for Insights -->
+                        <div id="insightsErrorAlert" class="alert alert-danger mt-3" style="display: none;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+    <script>
+        const API_BASE_URL = 'http://localhost:8080';
+
+        // Page navigation
+        function showShortPage() {
+            document.getElementById('shortPage').style.display = 'block';
+            document.getElementById('insightsPage').style.display = 'none';
+            clearResults();
+        }
+
+        function showInsightsPage() {
+            document.getElementById('shortPage').style.display = 'none';
+            document.getElementById('insightsPage').style.display = 'block';
+            clearResults();
+        }
+
+        function clearResults() {
+            document.getElementById('result').style.display = 'none';
+            document.getElementById('errorAlert').style.display = 'none';
+            document.getElementById('statsResult').style.display = 'none';
+            document.getElementById('insightsErrorAlert').style.display = 'none';
+        }
+
+        // Function to shorten URL
+        document.getElementById('shortForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const submitBtn = this.querySelector('button[type="submit"]');
+            const loading = submitBtn.querySelector('.loading');
+            const notLoading = submitBtn.querySelector('.not-loading');
+            
+            // Show loading
+            loading.style.display = 'inline';
+            notLoading.style.display = 'none';
+            submitBtn.disabled = true;
+
+            const formData = {
+                url: document.getElementById('url').value,
+                slug: document.getElementById('customSlug').value || null,
+                expiresAfter: document.getElementById('expiresAfter').value ? parseInt(document.getElementById('expiresAfter').value) : null,
+                generateQrCode: document.getElementById('generateQrCode').checked
+            };
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/short`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    // Success
+                    document.getElementById('shortenedUrl').value = data.data.shortenedUrl;
+                    document.getElementById('result').style.display = 'block';
+                    document.getElementById('errorAlert').style.display = 'none';
+
+                    // Show QR Code if generated
+                    if (data.data.qrCode) {
+                        const qrCodeContainer = document.getElementById('qrCodeContainer');
+                        const qrCodeImage = document.getElementById('qrCodeImage');
+                        
+                        console.log('QR Code data type:', typeof data.data.qrCode);
+                        console.log('QR Code data:', data.data.qrCode);
+                        
+                        // Convert base64 or byte array to displayable image
+                        if (typeof data.data.qrCode === 'string') {
+                            // If it's a base64 string
+                            qrCodeImage.src = `data:image/png;base64,${data.data.qrCode}`;
+                        } else if (Array.isArray(data.data.qrCode)) {
+                            // If it's a byte array
+                            const blob = new Blob([new Uint8Array(data.data.qrCode)], {type: 'image/png'});
+                            const url = URL.createObjectURL(blob);
+                            qrCodeImage.src = url;
+                        } else {
+                            console.error('Unknown QR Code data format');
+                        }
+                        qrCodeContainer.style.display = 'block';
+                    } else {
+                        document.getElementById('qrCodeContainer').style.display = 'none';
+                    }
+                } else {
+                    // Error
+                    document.getElementById('errorAlert').textContent = data.message;
+                    document.getElementById('errorAlert').style.display = 'block';
+                    document.getElementById('result').style.display = 'none';
+                }
+            } catch (error) {
+                document.getElementById('errorAlert').textContent = 'Connection error. Please check if the API is running.';
+                document.getElementById('errorAlert').style.display = 'block';
+                document.getElementById('result').style.display = 'none';
+            } finally {
+                // Hide loading
+                loading.style.display = 'none';
+                notLoading.style.display = 'inline';
+                submitBtn.disabled = false;
+            }
+        });
+
+        // Function to fetch insights
+        document.getElementById('insightsForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const submitBtn = this.querySelector('button[type="submit"]');
+            const loading = submitBtn.querySelector('.loading');
+            const notLoading = submitBtn.querySelector('.not-loading');
+            
+            // Show loading
+            loading.style.display = 'inline';
+            notLoading.style.display = 'none';
+            submitBtn.disabled = true;
+
+            const slug = document.getElementById('slugInput').value;
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/clicks`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ slug: slug })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    // Success
+                    document.getElementById('clicksCount').textContent = data.data;
+                    document.getElementById('statsResult').style.display = 'block';
+                    document.getElementById('insightsErrorAlert').style.display = 'none';
+                } else {
+                    // Error
+                    document.getElementById('insightsErrorAlert').textContent = data.message;
+                    document.getElementById('insightsErrorAlert').style.display = 'block';
+                    document.getElementById('statsResult').style.display = 'none';
+                }
+            } catch (error) {
+                document.getElementById('insightsErrorAlert').textContent = 'Connection error. Please check if the API is running.';
+                document.getElementById('insightsErrorAlert').style.display = 'block';
+                document.getElementById('statsResult').style.display = 'none';
+            } finally {
+                // Hide loading
+                loading.style.display = 'none';
+                notLoading.style.display = 'inline';
+                submitBtn.disabled = false;
+            }
+        });
+
+        // Function to copy to clipboard
+        function copyToClipboard() {
+            const shortenedUrl = document.getElementById('shortenedUrl');
+            shortenedUrl.select();
+            shortenedUrl.setSelectionRange(0, 99999);
+            navigator.clipboard.writeText(shortenedUrl.value);
+            
+            // Visual feedback
+            const copyBtn = document.querySelector('#result .btn-outline-secondary');
+            const originalHtml = copyBtn.innerHTML;
+            copyBtn.innerHTML = '<i class="fas fa-check"></i>';
+            copyBtn.classList.remove('btn-outline-secondary');
+            copyBtn.classList.add('btn-success');
+            
+            setTimeout(() => {
+                copyBtn.innerHTML = originalHtml;
+                copyBtn.classList.remove('btn-success');
+                copyBtn.classList.add('btn-outline-secondary');
+            }, 2000);
+        }
+
+        // Initialize on shorten page
+        showShortPage();
+    </script>
 </body>
 </html>

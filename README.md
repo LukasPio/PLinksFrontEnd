@@ -1,5 +1,1 @@
-A simple and not very pretty front-end for PLinks that is my implementation of a link shortener in java + spring: https://github.com/LukasPio/PLinks
-
-I didn't focus too much on elegance and stylezation, just on usuability.
-
-The sole purpose of this repository is to allow testing of my API as a final product, without the need for an external http client.
+An ai generated frontend for consume an API that I created, to check it's repository access: https://github.com/LukasPio/PLinks
