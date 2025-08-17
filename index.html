@@ -243,6 +243,21 @@
                                     </div>
                                 </div>
                             </div>
+                            
+                            <!-- QR Code Section -->
+                            <div id="insightsQrCodeContainer" class="mt-4" style="display: none;">
+                                <div class="stats-card text-center">
+                                    <i class="fas fa-qrcode fa-2x text-primary mb-3"></i>
+                                    <h5>QR Code</h5>
+                                    <p class="text-muted mb-3">Scan this code to access your shortened link</p>
+                                    <img id="insightsQrCodeImage" src="" alt="QR Code" class="img-fluid" style="max-width: 200px; border-radius: 10px;">
+                                    <div class="mt-3">
+                                        <button class="btn btn-outline-primary btn-sm" onclick="downloadQrCode()">
+                                            <i class="fas fa-download"></i> Download QR Code
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
 
                         <!-- Error Alert for Insights -->
@@ -275,6 +290,7 @@
             document.getElementById('errorAlert').style.display = 'none';
             document.getElementById('statsResult').style.display = 'none';
             document.getElementById('insightsErrorAlert').style.display = 'none';
+            document.getElementById('insightsQrCodeContainer').style.display = 'none';
         }
 
         // Function to shorten URL
@@ -412,6 +428,31 @@
                         expirationStatus.className = 'text-success';
                     }
                     
+                    // Handle QR Code display
+                    const qrCodeContainer = document.getElementById('insightsQrCodeContainer');
+                    if (insights.qrCode) {
+                        const qrCodeImage = document.getElementById('insightsQrCodeImage');
+                        
+                        console.log('Insights QR Code data type:', typeof insights.qrCode);
+                        console.log('Insights QR Code data:', insights.qrCode);
+                        
+                        // Convert base64 or byte array to displayable image
+                        if (typeof insights.qrCode === 'string') {
+                            // If it's a base64 string
+                            qrCodeImage.src = `data:image/png;base64,${insights.qrCode}`;
+                        } else if (Array.isArray(insights.qrCode)) {
+                            // If it's a byte array
+                            const blob = new Blob([new Uint8Array(insights.qrCode)], {type: 'image/png'});
+                            const url = URL.createObjectURL(blob);
+                            qrCodeImage.src = url;
+                        } else {
+                            console.error('Unknown QR Code data format in insights');
+                        }
+                        qrCodeContainer.style.display = 'block';
+                    } else {
+                        qrCodeContainer.style.display = 'none';
+                    }
+                    
                     document.getElementById('statsResult').style.display = 'block';
                     document.getElementById('insightsErrorAlert').style.display = 'none';
                 } else {
@@ -451,6 +492,17 @@
                 copyBtn.classList.remove('btn-success');
                 copyBtn.classList.add('btn-outline-secondary');
             }, 2000);
+        }
+
+        // Function to download QR Code
+        function downloadQrCode() {
+            const qrCodeImage = document.getElementById('insightsQrCodeImage');
+            const link = document.createElement('a');
+            link.href = qrCodeImage.src;
+            link.download = 'qr-code.png';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
         }
 
         // Initialize on shorten page
